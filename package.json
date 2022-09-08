@@ -11,7 +11,6 @@
   "hexo": {
     "version": "6.2.0"
   },
-  "homepage": "https://zerodlee.github.io/my-record",
   "dependencies": {
     "hexo": "^6.2.0",
     "hexo-generator-archive": "^1.0.0",
