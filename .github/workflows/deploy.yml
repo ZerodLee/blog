@@ -48,7 +48,7 @@ jobs:
           # Github email
           user_email: eolo3@qq.com
           # The deploy key for Github Pages repo
-          deploy_key: ${{ secrets.POST_ACCESS_TOKEN }}
+          deploy_key: ${{ secrets.HEXO_DEPLOY_PUB }}
           # Git commit messages to your GitHub Pages repository.
           # commit_msg: # optional, default is 
           
