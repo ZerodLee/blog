@@ -10,5 +10,5 @@ tags:
 
 
 ```js
-export const A = "123";
+export const A = "1234";
 ```
