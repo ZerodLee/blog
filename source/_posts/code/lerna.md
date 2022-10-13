@@ -5,8 +5,6 @@ tags:
     - 技术
     - 总结
 categories: 技术
-layout: tweet
-icon: git-branch-outline
 ---
 
 # lerna 用法
