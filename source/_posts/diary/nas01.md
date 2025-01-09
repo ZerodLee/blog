@@ -1,6 +1,6 @@
 ---
 title: NAS折腾日记（一）：先做起来再说
-date: 2022-09-26 13:57:48
+date: 2024-01-09 13:57:48
 categories: 个人
 tags: 
     - NAS
