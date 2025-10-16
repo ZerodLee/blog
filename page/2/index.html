@@ -152,6 +152,154 @@
   
     
       <article
+id="post-code/lerna"
+class="article article-type-post"
+>
+
+
+
+<div class="article-inner">
+    
+
+    <div class="article-body">
+    <header class="article-title">
+        <a href="/2022/10/09/code/lerna/">lerna 用法</a>
+    </header>
+    <div class="article-entry post-inner-html">
+        
+        <h1 id="lerna-用法"><a href="#lerna-用法" class="headerlink" title="lerna 用法"></a>lerna 用法</h1><blockquote>
+<p>Lerna是一个工具，它优化了使用git和npm管理多包存储库的工作流。</p>
+</blockquote>
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><h3 id="工作的两种模式"><a href="#工作的两种模式" class="headerlink" title="工作的两种模式"></a>工作的两种模式</h3><h4 id="Fixed-x2F-Locked-mode-default"><a href="#Fixed-x2F-Locked-mode-default" class="headerlink" title="Fixed&#x2F;Locked mode (default)"></a>Fixed&#x2F;Locked mode (default)</h4><p>vue,babel都是用这种，在publish的时候,会在lerna.json文件里面”version”: “0.1.5”,,依据这个号，进行增加，只选择一次，其他有改动的包自动更新版本号。</p>
+<h4 id="Independent-mode"><a href="#Independent-mode" class="headerlink" title="Independent mode"></a>Independent mode</h4><p>lerna init –independent初始化项目。<br>lerna.json文件里面”version”: “independent”,<br>每次publish时，您都将得到一个提示符，提示每个已更改的包，以指定是补丁、次要更改、主要更改还是自定义更改。</p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> <span class="token function">install</span> lerna <span class="token parameter variable">-g</span>
+$ <span class="token function">mkdir</span> lerna-gp <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span>
+$ lerna init <span class="token comment"># 用的默认的固定模式，vue-cli babel等都是这个</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><pre class="line-numbers language-none"><code class="language-none">➜  lerna-gp git:(master) ✗ tree
+.
+├── lerna.json
+├── package.json
+└── packages
+    ├── daybyday
+    │   └── package.json
+    ├── gpnode
+    │   └── package.json
+    └── gpwebpack
+        └── package.json
+
+4 directories, 5 files
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><ul>
+<li>package.json</li>
+<li>lerna.json</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none"># package.json 文件加入
+  &quot;private&quot;: true,   &#x2F;&#x2F; 私有模式不发布
+  &quot;workspaces&quot;: [
+    &quot;packages&#x2F;*&quot;   &#x2F;&#x2F; 自定义包路径
+  ],
+
+# lerna.json 文件加入
+&quot;useWorkspaces&quot;: true,   &#x2F;&#x2F; 使用自定义包路径
+&quot;npmClient&quot;: &quot;yarn&quot;,   &#x2F;&#x2F; 修改包管理工具
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><h5 id="lerna-create-lt-name-gt-loc"><a href="#lerna-create-lt-name-gt-loc" class="headerlink" title="lerna create &lt; name &gt; [loc]"></a>lerna create &lt; name &gt; [loc]</h5><p>创建一个包，name包名，loc 位置可选</p>
+<pre class="line-numbers language-none"><code class="language-none"># 根目录的package.json 
+ &quot;workspaces&quot;: [
+    &quot;packages&#x2F;*&quot;,
+    &quot;packages&#x2F;@gp0320&#x2F;*&quot;
+  ],
+  
+# 创建一个包gpnote默认放在 workspaces[0]所指位置
+lerna create gpnote 
+
+# 创建一个包gpnote指定放在 packages&#x2F;@gp0320文件夹下，注意必须在workspaces先写入packages&#x2F;@gp0320，看上面
+lerna create gpnote packages&#x2F;@gp0320
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="lerna-add-version-–dev-–exact"><a href="#lerna-add-version-–dev-–exact" class="headerlink" title="lerna add [@version] [–dev] [–exact]"></a>lerna add [@version] [–dev] [–exact]</h5><p>增加本地或者远程package做为当前项目packages里面的依赖</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Adds the module-1 package to the packages in the 'prefix-' prefixed folders</span>
+lerna <span class="token function">add</span> module-1 packages/prefix-*
+
+<span class="token comment"># Install module-1 to module-2</span>
+lerna <span class="token function">add</span> module-1 <span class="token parameter variable">--scope</span><span class="token operator">=</span>module-2
+
+<span class="token comment"># Install module-1 to module-2 in devDependencies</span>
+lerna <span class="token function">add</span> module-1 <span class="token parameter variable">--scope</span><span class="token operator">=</span>module-2 <span class="token parameter variable">--dev</span>
+
+<span class="token comment"># Install module-1 in all modules except module-1</span>
+lerna <span class="token function">add</span> module-1
+
+<span class="token comment"># Install babel-core in all modules</span>
+lerna <span class="token function">add</span> babel-core
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="lerna-bootstrap"><a href="#lerna-bootstrap" class="headerlink" title="lerna bootstrap"></a>lerna bootstrap</h5><p>默认是npm i,因为我们指定过yarn，so,run yarn install,会把所有包的依赖安装到根node_modules.</p>
+<h5 id="lerna-list"><a href="#lerna-list" class="headerlink" title="lerna list"></a>lerna list</h5><p>列出所有的包，如果与你文夹里面的不符，进入那个包运行yarn init -y解决。</p>
+<h5 id="lerna-import-lt-path-gt"><a href="#lerna-import-lt-path-gt" class="headerlink" title="lerna import &lt; path &gt;"></a>lerna import &lt; path &gt;</h5><p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/5/29/16b022e704dafb50~tplv-t2oaga2asx-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image"></p>
+<h5 id="lerna-run-lt-script-gt-–-args"><a href="#lerna-run-lt-script-gt-–-args" class="headerlink" title="lerna run &lt; script &gt; – [..args]"></a>lerna run &lt; script &gt; – [..args]</h5><p>运行依赖包里面的有这个script的命令</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">lerna run <span class="token parameter variable">--scope</span> my-component <span class="token builtin class-name">test</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+<h5 id="lerna-link"><a href="#lerna-link" class="headerlink" title="lerna link"></a>lerna link</h5><p>项目包建立软链，类似npm link</p>
+<h5 id="lerna-clean"><a href="#lerna-clean" class="headerlink" title="lerna clean"></a>lerna clean</h5><p>删除所有包的node_modules目录</p>
+<h5 id="lerna-changed"><a href="#lerna-changed" class="headerlink" title="lerna changed"></a>lerna changed</h5><p>列出下次发版lerna publish 要更新的包。</p>
+<p>原理： 需要先git add,git commit 提交。 然后内部会运行git diff –name-only v版本号，搜集改动的包，就是下次要发布的。并不是网上人说的所有包都是同一个版全发布。</p>
+<pre class="line-numbers language-none"><code class="language-none">➜  lerna-repo git:(master) ✗ lerna changed                                     
+info cli using local version of lerna
+lerna notice cli v3.14.1
+lerna info Looking for changed packages since v0.1.4
+daybyday #只改过这一个 那下次publish将只上传这一个
+lerna success found 1 package ready to publish
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="lerna-publish"><a href="#lerna-publish" class="headerlink" title="lerna publish"></a>lerna publish</h5><p>会打tag，上传git,上传npm。 如果你的包名是带scope的例如：”name”: “@gp0320&#x2F;gpwebpack”, 那需要在packages.json添加</p>
+<pre class="line-numbers language-none"><code class="language-none">&quot;publishConfig&quot;: &#123;
+   &quot;access&quot;: &quot;public&quot;
+ &#125;,<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="lerna-exec-–-lt-command-gt-args"><a href="#lerna-exec-–-lt-command-gt-args" class="headerlink" title="lerna exec – &lt; command &gt; [..args]"></a>lerna exec – &lt; command &gt; [..args]</h5><p>运行任意命令在每个包</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">lerna <span class="token builtin class-name">exec</span> -- <span class="token function">rm</span> <span class="token parameter variable">-rf</span> ./node_modules
+
+lerna <span class="token builtin class-name">exec</span> <span class="token parameter variable">--scope</span> my-component -- <span class="token function">ls</span> <span class="token parameter variable">-la</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+        
+    </div>
+    </div>
+
+    <div class="article-badge">
+        
+        
+    </div>
+
+</div>
+
+<footer class="article-footer">
+    <div class="article-more-info">
+    <div class="article-date">
+  <time datetime="2022-10-09T16:57:46.000Z" itemprop="datePublished">2022-10-09</time>
+</div>
+    
+        <div class="article-category">
+        <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+        </div>
+    
+    
+        <div class="article-tag">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF/" rel="tag">技术</a></li></ul>
+        </div>
+    
+    </div>
+</footer>
+
+</article>
+
+    
+  
+    
+      <article
 id="post-diary/20220926"
 class="article article-type-post"
 >
@@ -457,6 +605,10 @@ class="article article-type-post"
       <ul>
         
           <li>
+            <a href="/2025/09/28/code/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F/">浏览器缓存处理方式</a>
+          </li>
+        
+          <li>
             <a href="/2024/11/21/essays/grid-background/">用纯 CSS 实现网格背景</a>
           </li>
         
@@ -472,10 +624,6 @@ class="article article-type-post"
             <a href="/2024/01/09/diary/nas01/">NAS折腾日记（一）：先做起来再说</a>
           </li>
         
-          <li>
-            <a href="/2023/11/06/tweet/20231106/">202231106</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -485,7 +633,7 @@ class="article article-type-post"
   <div class="widget-wrap widget-archive">
     <div class="widget-title"><span>Archive</span></div>
     <div class="widget-inner">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/">2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/">2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/">2022</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/">2025</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/">2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/">2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/">2022</a></li></ul>
     </div>
   </div>
 
